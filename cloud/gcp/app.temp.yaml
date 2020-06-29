@@ -1,0 +1,58 @@
+service: default
+runtime: nodejs10
+instance_class: F2
+env_variables:
+  # https://dev.to/mungell/google-cloud-app-engine-environment-variables-5990
+  # https://stackoverflow.com/questions/22669528/securely-storing-environment-variables-in-gae-with-app-yaml
+  MONGO_ADDRESS: "__MONGO_ADDRESS__"
+  STATUS_MONITOR_ADDRESS: "__STATUS_MONITOR_ADDRESS__"
+  LOG_LEVEL: "debug"
+  SALT: "__SALT__"
+  SECRET: "__SECRET__"
+  DOMAIN: "__DOMAIN__"
+
+default_expiration: "10m" # Sets a global default cache period for all static file handlers for an application
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 1
+  target_cpu_utilization: 0.9
+  target_throughput_utilization: 0.9
+
+handlers:
+  - url: /favicon\.ico
+    secure: always
+    redirect_http_response_code: 301
+    static_files: public/favicon.ico
+    upload: public/favicon\.ico
+
+  - url: /
+    secure: always
+    redirect_http_response_code: 301
+    static_files: public/index.html
+    upload: public/index.html
+
+  - url: /public
+    secure: always
+    redirect_http_response_code: 301
+    static_dir: public
+
+  - url: /user.*
+    secure: always
+    redirect_http_response_code: 301
+    static_files: public/index.html
+    upload: public/index.html
+
+  - url: /search.*
+    secure: always
+    redirect_http_response_code: 301
+    static_files: public/index.html
+    upload: public/index.html
+
+  - url: /socket\.io/.*
+    script: auto
+
+  - url: /.*
+    secure: always
+    redirect_http_response_code: 301
+    script: auto
